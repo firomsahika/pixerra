@@ -41,8 +41,27 @@ export async function toggleLike(designId: string) {
 
         // Increment likes count
         await supabase.rpc('increment_likes', { design_id: designId })
+
+        // 🔔 Create a Notification
+        // 1. Get the design owner
+        const { data: design } = await supabase
+            .from("designs")
+            .select("user_id")
+            .eq("id", designId)
+            .single()
+
+        // 2. Insert notification if the owner isn't the liker themselves
+        if (design && design.user_id !== user.id) {
+            await supabase.from("notifications").insert({
+                user_id: design.user_id,
+                actor_id: user.id,
+                type: "like",
+                design_id: designId
+            })
+        }
     }
 
     revalidatePath("/explore")
     revalidatePath(`/design/${designId}`)
+    revalidatePath("/notifications")
 }

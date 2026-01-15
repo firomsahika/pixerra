@@ -31,7 +31,7 @@ export function Navbar({ user }: NavbarProps) {
     }
 
     return (
-        <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-100">
+        <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100">
             <div className="flex items-center justify-between h-20 px-4 md:px-8">
                 <Link href="/" className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">P</div>
@@ -53,12 +53,16 @@ export function Navbar({ user }: NavbarProps) {
                     <div className="flex items-center gap-2">
                         {user ? (
                             <>
-                                <Button variant="ghost" size="icon" className="hidden md:flex">
-                                    <Bell className="h-6 w-6 text-gray-600" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="hidden md:flex">
-                                    <MessageCircle className="h-6 w-6 text-gray-600" />
-                                </Button>
+                                <Link href="/notifications">
+                                    <Button variant="ghost" size="icon" className="hidden md:flex">
+                                        <Bell className="h-6 w-6 text-gray-600" />
+                                    </Button>
+                                </Link>
+                                <Link href="/messages">
+                                    <Button variant="ghost" size="icon" className="hidden md:flex">
+                                        <MessageCircle className="h-6 w-6 text-gray-600" />
+                                    </Button>
+                                </Link>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
