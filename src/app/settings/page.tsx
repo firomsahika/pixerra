@@ -20,8 +20,6 @@ export default async function SettingsPage() {
                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-8">Settings</h1>
 
                 <div className="space-y-10">
-
-
                     <section>
                         <h2 className="text-xl font-semibold mb-4 text-gray-900">Account</h2>
                         <div className="space-y-4">
@@ -34,9 +32,8 @@ export default async function SettingsPage() {
                             </div>
                         </div>
                     </section>
-
-
                 </div>
             </div>
-            )
+        </div>
+    )
 }

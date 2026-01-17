@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { createClient } from "@/utils/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface NavbarProps {
     user: User | null
@@ -23,12 +24,15 @@ interface NavbarProps {
 
 export function Navbar({ user }: NavbarProps) {
     const router = useRouter()
+    const pathname = usePathname()
     const supabase = createClient()
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
         router.refresh()
     }
+
+    const isActive = (path: string) => pathname === path
 
     return (
         <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100">
@@ -47,20 +51,45 @@ export function Navbar({ user }: NavbarProps) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Link href="/explore" className="hidden md:block font-medium text-gray-600 hover:text-black">Explore</Link>
-                    <Link href="/upload" className="hidden md:block font-medium text-gray-600 hover:text-black">Create</Link>
+                    <Link
+                        href="/explore"
+                        className={cn(
+                            "hidden md:block font-medium transition-colors",
+                            isActive("/explore") ? "text-red-600" : "text-gray-600 hover:text-black"
+                        )}
+                    >
+                        Explore
+                    </Link>
+                    <Link
+                        href="/creators"
+                        className={cn(
+                            "hidden md:block font-medium transition-colors",
+                            isActive("/creators") ? "text-red-600" : "text-gray-600 hover:text-black"
+                        )}
+                    >
+                        Creators
+                    </Link>
+                    <Link
+                        href="/upload"
+                        className={cn(
+                            "hidden md:block font-medium transition-colors",
+                            isActive("/upload") ? "text-red-600" : "text-gray-600 hover:text-black"
+                        )}
+                    >
+                        Create
+                    </Link>
 
                     <div className="flex items-center gap-2">
                         {user ? (
                             <>
                                 <Link href="/notifications">
                                     <Button variant="ghost" size="icon" className="hidden md:flex">
-                                        <Bell className="h-6 w-6 text-gray-600" />
+                                        <Bell className={cn("h-6 w-6 transition-colors", isActive("/notifications") ? "text-red-600" : "text-gray-600")} />
                                     </Button>
                                 </Link>
                                 <Link href="/messages">
                                     <Button variant="ghost" size="icon" className="hidden md:flex">
-                                        <MessageCircle className="h-6 w-6 text-gray-600" />
+                                        <MessageCircle className={cn("h-6 w-6 transition-colors", isActive("/messages") ? "text-red-600" : "text-gray-600")} />
                                     </Button>
                                 </Link>
                                 <DropdownMenu>

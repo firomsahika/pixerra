@@ -51,7 +51,7 @@ export default async function MessagesPage() {
     const conversations = Array.from(conversationsMap.values())
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-white pt-24 pb-20 px-4">
+        <div className="min-h-screen relative overflow-hidden bg-white pt-5 pb-20 px-4">
             {/* Decorative background blobs */}
             <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-50/40 rounded-full blur-[120px] -z-10 animate-blob" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-red-50/30 rounded-full blur-[120px] -z-10 animate-blob animation-delay-2000" />

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation"
 import { NotificationItem } from "@/components/features/notifications/NotificationItem"
@@ -35,7 +36,7 @@ export default async function NotificationsPage() {
         .order("created_at", { ascending: false })
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-white pt-24 pb-20 px-4">
+        <div className="min-h-screen relative overflow-hidden bg-white pt-10 pb-20 px-4">
             {/* Soft decorative background blobs */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-50/30 rounded-full blur-[120px] -z-10" />
