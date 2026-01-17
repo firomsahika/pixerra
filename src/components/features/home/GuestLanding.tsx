@@ -40,7 +40,7 @@ export function GuestLanding({ featuredDesigns }: GuestLandingProps) {
             <section className="relative flex flex-col items-center justify-center py-32 px-4 text-center space-y-8 mesh-gradient min-h-[90vh]">
                 {/* Animated Background Blobs */}
                 <div className="absolute top-20 left-10 w-72 h-72 bg-red-200/40 rounded-full blur-[100px] animate-blob" />
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-200/30 rounded-full blur-[120px] animate-blob animation-delay-2000" />
+                <div className="absolute bottom-20 right-10 w-96 h-96 bg-amber-200/30 rounded-full blur-[120px] animate-blob animation-delay-2000" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-50/20 rounded-full blur-[140px] animate-blob animation-delay-4000" />
 
                 <motion.div
@@ -214,7 +214,7 @@ export function GuestLanding({ featuredDesigns }: GuestLandingProps) {
                                     <div className="bg-gray-900 rounded-[60px] aspect-square flex items-center justify-center p-10 mb-6 shadow-2xl shadow-black/20 animate-float animation-delay-2000">
                                         <Zap className="w-24 h-24 text-red-500" />
                                     </div>
-                                    <div className="bg-blue-50 rounded-[60px] aspect-square rotate-12" />
+                                    <div className="bg-amber-50 rounded-[60px] aspect-square rotate-12" />
                                 </div>
                             </div>
                         </motion.div>

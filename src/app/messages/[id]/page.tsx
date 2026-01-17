@@ -1,9 +1,12 @@
 import { createClient } from "@/utils/supabase/server"
-import { redirect, notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 import Link from "next/link"
-import { ChevronLeft, Info } from "lucide-react"
+import { Search, Info, Settings, Plus, Phone, Video, Info as InfoIcon, Paperclip } from "lucide-react"
 import { ChatBox } from "@/components/features/messages/ChatBox"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { formatDistanceToNow } from "date-fns"
+import { cn } from "@/lib/utils"
+import { MOCK_CONVERSATIONS, MOCK_MESSAGES } from "@/data/mockMessages"
 
 export default async function ConversationPage({ params }: { params: { id: string } }) {
     const { id } = await params
@@ -15,115 +18,149 @@ export default async function ConversationPage({ params }: { params: { id: strin
         redirect("/login")
     }
 
-    // 1. Fetch the other user's profile
-    const { data: otherUser } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", id)
-        .single()
+    const otherUser = MOCK_CONVERSATIONS.find(c => c.userId === id)?.profile || MOCK_CONVERSATIONS[0].profile
 
-    if (!otherUser) {
-        notFound()
-    }
-
-    // 2. Fetch messages
-    const { data: messages } = await supabase
-        .from("messages")
-        .select("*")
-        .or(`and(sender_id.eq.${user.id},receiver_id.eq.${id}),and(sender_id.eq.${id},receiver_id.eq.${user.id})`)
-        .order("created_at", { ascending: true })
-
-    // 3. Mark as read
-    await supabase
-        .from("messages")
-        .update({ is_read: true })
-        .eq("sender_id", id)
-        .eq("receiver_id", user.id)
-        .eq("is_read", false)
+    const messages = MOCK_MESSAGES.map(msg => ({
+        ...msg,
+        sender_id: msg.sender_id === "me" ? user.id : id
+    }))
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-white pt-24 pb-20 px-4">
-            {/* Decorative background blobs */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/40 rounded-full blur-[120px] -z-10 animate-blob" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-red-50/20 rounded-full blur-[100px] -z-10 animate-blob animation-delay-4000" />
+        <div className="h-screen w-full overflow-hidden bg-white pt-20" suppressHydrationWarning>
+            <div className="h-full flex max-w-[1600px] mx-auto border-x border-gray-100 bg-white shadow-sm overflow-hidden">
 
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 h-[800px] relative">
-                {/* Compact Nav Sidebar */}
-                <div className="hidden md:flex flex-col w-20 bg-white/40 backdrop-blur-xl rounded-[32px] border border-white shadow-2xl shadow-gray-100/30 p-4 items-center gap-8">
-                    <Link
-                        href="/messages"
-                        className="p-4 bg-gray-900 rounded-2xl text-white hover:bg-black transition-all shadow-lg active:scale-90"
-                        title="Back to inbox"
-                    >
-                        <ChevronLeft className="w-6 h-6" />
-                    </Link>
-                    <div className="w-full h-px bg-gray-100/50" />
-                    <Avatar className="h-12 w-12 border-2 border-white shadow-md">
-                        <AvatarImage src={user.user_metadata.avatar_url} />
-                        <AvatarFallback className="font-black text-gray-400">U</AvatarFallback>
-                    </Avatar>
+                {/* Column 1: Threads */}
+                <div className="hidden md:flex flex-col w-[320px] lg:w-[380px] border-r border-gray-100 bg-[#f9f9f9]/30">
+                    <div className="p-6 border-b border-gray-100 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h1 className="text-lg font-black text-gray-900 tracking-tight">Recent Messages</h1>
+                            <div className="flex gap-1">
+                                <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-900 transition-colors">
+                                    <Settings className="w-4 h-4" />
+                                </button>
+                                <button className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-900 transition-colors">
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="relative group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 h-3.5 w-3.5" />
+                            <input
+                                placeholder="Search messages"
+                                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-transparent rounded-lg focus:bg-white focus:border-gray-200 outline-none text-[12px] font-medium transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto custom-scrollbar">
+                        {MOCK_CONVERSATIONS.map((chat) => (
+                            <Link
+                                key={chat.userId}
+                                href={`/messages/${chat.userId}`}
+                                className={cn(
+                                    "flex items-center gap-3 p-4 border-b border-gray-50 transition-all group relative",
+                                    chat.userId === id ? "bg-white shadow-sm z-10" : "hover:bg-white/60"
+                                )}
+                            >
+                                <div className="relative shrink-0">
+                                    <Avatar className="h-10 w-10 border border-white shadow-sm">
+                                        <AvatarImage src={chat.profile.avatar_url} />
+                                        <AvatarFallback className="bg-gray-100 text-gray-400 font-bold text-xs">{chat.profile.full_name[0]}</AvatarFallback>
+                                    </Avatar>
+                                    {chat.isUnread && (
+                                        <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-600 rounded-full border-2 border-white" />
+                                    )}
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                                        <h3 className={cn("text-[13px] truncate", chat.userId === id ? "font-bold text-red-600" : "font-bold text-gray-900")}>
+                                            {chat.profile.full_name}
+                                        </h3>
+                                        <span suppressHydrationWarning className="text-[10px] text-gray-400 font-semibold whitespace-nowrap">
+                                            {formatDistanceToNow(new Date(chat.createdAt), { addSuffix: false })}
+                                        </span>
+                                    </div>
+                                    <p className={cn("text-[11px] truncate leading-tight", chat.isUnread ? "text-gray-900 font-bold" : "text-gray-500 font-medium")}>
+                                        {chat.lastMessage}
+                                    </p>
+                                </div>
+
+                                {chat.userId === id && (
+                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600" />
+                                )}
+                            </Link>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Main Chat Interface */}
-                <div className="flex-1 bg-white/40 backdrop-blur-3xl rounded-[48px] border border-white shadow-2xl shadow-gray-100/50 overflow-hidden flex flex-col relative group">
+                {/* Column 2: Chat */}
+                <main className="flex-1 flex flex-col min-w-0 bg-white">
                     <ChatBox
                         currentUser={user}
                         otherUser={otherUser}
-                        initialMessages={messages || []}
+                        initialMessages={messages}
                     />
-                </div>
+                </main>
 
-                {/* Profile Info Sidebar */}
-                <div className="hidden lg:flex flex-col w-80 bg-white/40 backdrop-blur-xl rounded-[40px] border border-white shadow-2xl shadow-gray-100/30 p-10">
-                    <div className="text-center space-y-6">
-                        <div className="relative inline-block mx-auto">
-                            <Avatar className="h-32 w-32 border-4 border-white shadow-xl">
+                {/* Column 3: Details */}
+                <aside className="hidden xl:flex flex-col w-[300px] border-l border-gray-100 bg-[#f9f9f9]/30 overflow-y-auto">
+                    <div className="p-8 space-y-8">
+                        <div className="text-center space-y-4">
+                            <Avatar className="h-20 w-20 mx-auto border-4 border-white shadow-lg">
                                 <AvatarImage src={otherUser.avatar_url} />
-                                <AvatarFallback className="text-3xl font-black bg-gradient-to-br from-gray-100 to-gray-200 text-gray-400">
+                                <AvatarFallback className="text-xl font-bold bg-gray-100 text-gray-400">
                                     {otherUser.full_name[0]}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="absolute bottom-2 right-2 h-6 w-6 bg-green-500 border-4 border-white rounded-full" />
-                        </div>
-
-                        <div>
-                            <h3 className="text-2xl font-black text-gray-900 leading-tight tracking-tight">{otherUser.full_name}</h3>
-                            <p className="text-sm text-blue-600 font-black tracking-widest uppercase mt-1">@{otherUser.username}</p>
-                        </div>
-
-                        <p className="text-sm text-gray-500 font-medium leading-relaxed italic px-2">
-                            {otherUser.bio || "Crafting digital experiences and pixel-perfect designs."}
-                        </p>
-                    </div>
-
-                    <div className="mt-12 space-y-8 flex-1">
-                        <div className="space-y-4">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] block">Conversation Info</span>
-                            <div className="p-5 bg-white/60 rounded-3xl border border-white shadow-sm space-y-3">
-                                <div className="flex items-center justify-between text-xs font-bold">
-                                    <span className="text-gray-400">Joined</span>
-                                    <span className="text-gray-900">Jan 2024</span>
-                                </div>
-                                <div className="flex items-center justify-between text-xs font-bold">
-                                    <span className="text-gray-400">Total Designs</span>
-                                    <span className="text-gray-900">24</span>
-                                </div>
+                            <div>
+                                <h3 className="text-md font-black text-gray-900 tracking-tight">{otherUser.full_name}</h3>
+                                <p className="text-[10px] text-red-600 font-black uppercase tracking-widest mt-0.5">@{otherUser.username}</p>
+                            </div>
+                            <div className="flex justify-center gap-2">
+                                <button className="p-2 border border-gray-100 rounded-lg hover:bg-white transition-all text-gray-400 hover:text-red-500">
+                                    <Phone className="w-4 h-4" />
+                                </button>
+                                <button className="p-2 border border-gray-100 rounded-lg hover:bg-white transition-all text-gray-400 hover:text-red-500">
+                                    <Video className="w-4 h-4" />
+                                </button>
+                                <button className="p-2 border border-gray-100 rounded-lg hover:bg-white transition-all text-gray-400 hover:text-red-500">
+                                    <InfoIcon className="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
 
-                        <div className="p-6 bg-gray-900 rounded-[32px] text-white space-y-3 relative overflow-hidden">
-                            <div className="flex items-center gap-3 text-blue-400 relative z-10">
-                                <Info className="w-5 h-5" />
-                                <span className="text-xs font-black uppercase tracking-widest">Privacy Info</span>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">About Creator</span>
+                                <p className="text-[11px] text-gray-500 font-medium leading-relaxed italic">
+                                    Professional brand designer focused on clean, modern aesthetics and structured layouts.
+                                </p>
                             </div>
-                            <p className="text-xs text-gray-400 font-medium leading-relaxed relative z-10">
-                                Your conversation is private. Messages are stored securely for both participants.
-                            </p>
-                            {/* Accent decor */}
-                            <div className="absolute right-[-20px] top-[-20px] w-32 h-32 bg-blue-600/20 rounded-full blur-2xl" />
+
+                            <div className="space-y-3">
+                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Shared Files</span>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[1, 2, 3, 4].map(i => (
+                                        <div key={i} className="aspect-square rounded-lg bg-white border border-gray-100 flex items-center justify-center cursor-pointer hover:border-red-200 transition-colors">
+                                            <Paperclip className="w-4 h-4 text-gray-200" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-gray-900 rounded-xl text-white space-y-2">
+                                <div className="flex items-center gap-2 text-red-500">
+                                    <Info className="w-3.5 h-3.5" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest">Privacy</span>
+                                </div>
+                                <p className="text-[10px] text-gray-400 font-medium leading-relaxed">
+                                    Messages are encrypted. Do not share sensitive payment info.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     )

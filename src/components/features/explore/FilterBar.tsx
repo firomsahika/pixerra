@@ -33,7 +33,7 @@ export function FilterBar() {
                             key={filter}
                             onClick={() => handleFilterClick(filter)}
                             className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${activeFilter === filter
-                                ? "bg-black text-white shadow-md transform scale-105"
+                                ? "bg-red-600 text-white shadow-md transform scale-105"
                                 : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900"
                                 }`}
                         >

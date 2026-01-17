@@ -1,106 +1,130 @@
-import Link from 'next/link'
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation"
+import { Bell, Search, Filter, CheckCircle2 } from "lucide-react"
 import { NotificationItem } from "@/components/features/notifications/NotificationItem"
-import { Bell, Settings } from "lucide-react"
+
+const MOCK_NOTIFICATIONS = [
+    {
+        id: "1",
+        type: "like",
+        created_at: "2024-01-20T10:00:00Z",
+        is_read: false,
+        actor: {
+            full_name: "Alex Rivera",
+            avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop",
+            username: "arivera"
+        },
+        design: {
+            id: "d1",
+            title: "Minimalist Branding"
+        }
+    },
+    {
+        id: "2",
+        type: "follow",
+        created_at: "2024-01-19T14:30:00Z",
+        is_read: true,
+        actor: {
+            full_name: "Sarah Chen",
+            avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
+            username: "schen"
+        }
+    },
+    {
+        id: "3",
+        type: "message",
+        created_at: "2024-01-18T09:15:00Z",
+        is_read: false,
+        actor: {
+            full_name: "Marcus Thorne",
+            avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
+            username: "mthorne"
+        }
+    }
+]
 
 export default async function NotificationsPage() {
     const supabase = await createClient()
-
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
         redirect("/login")
     }
 
-    // Fetch notifications with actor profile and design info
-    const { data: notifications } = await supabase
-        .from("notifications")
-        .select(`
-            id,
-            type,
-            created_at,
-            is_read,
-            actor:actor_id (
-                full_name,
-                avatar_url,
-                username
-            ),
-            design:design_id (
-                id,
-                title,
-                image_url
-            )
-        `)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-
     return (
-        <div className="min-h-screen relative overflow-hidden bg-white pt-10 pb-20 px-4">
-            {/* Soft decorative background blobs */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-50/30 rounded-full blur-[120px] -z-10" />
-
-            <div className="max-w-2xl mx-auto relative">
-                {/* Premium Header */}
-                <div className="text-center space-y-4 mb-16">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 text-red-600 text-[10px] font-black tracking-[0.2em] uppercase">
-                        Activity Hub
+        <div className="min-h-screen bg-white pt-24 pb-20 overflow-x-hidden" suppressHydrationWarning>
+            <div className="max-w-3xl mx-auto px-6 space-y-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 py-4">
+                    <div className="space-y-1">
+                        <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center gap-2">
+                            Activity
+                            <div className="h-1.5 w-1.5 bg-red-600 rounded-full animate-pulse" />
+                        </h1>
+                        <p className="text-[12px] text-gray-400 font-bold uppercase tracking-widest">Your notifications & updates</p>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
-                        Your Notifications
-                    </h1>
-                    <p className="text-gray-500 font-medium max-w-sm mx-auto">
-                        Stay connected with the community and see who's interacting with your creative work.
-                    </p>
-                </div>
 
-                <div className="space-y-4">
-                    {notifications && notifications.length > 0 ? (
-                        <>
-                            <div className="flex items-center justify-between px-2 mb-2">
-                                <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Recent Activity</span>
-                                <button className="text-xs font-bold text-red-600 hover:text-red-700 transition-colors">Mark all as read</button>
-                            </div>
-                            {notifications.map((notif: any) => (
-                                <NotificationItem key={notif.id} notification={notif} />
-                            ))}
-                        </>
-                    ) : (
-                        <div className="text-center py-24 bg-white/40 backdrop-blur-xl rounded-[48px] border border-white shadow-2xl shadow-gray-100/50">
-                            <div className="relative mx-auto w-24 h-24 flex items-center justify-center bg-gray-50 rounded-full mb-8 animate-float">
-                                <Bell className="w-10 h-10 text-gray-300" />
-                                <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-100 rounded-full animate-ping" />
-                            </div>
-                            <h2 className="text-2xl font-black text-gray-900 mb-2">Clean slate!</h2>
-                            <p className="text-gray-500 font-medium max-w-xs mx-auto">
-                                No notifications yet. Share your designs to start getting noticed!
-                            </p>
-                            <Link href="/upload" className="mt-8 inline-block px-10 py-4 bg-red-600 text-white font-bold rounded-full hover:bg-black transition-all shadow-xl shadow-red-100">
-                                Share a Design
-                            </Link>
+                    <div className="flex items-center gap-3">
+                        <div className="relative group flex-1 md:flex-none">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 h-3.5 w-3.5" />
+                            <input
+                                placeholder="Search activity..."
+                                className="pl-9 pr-4 py-2 bg-gray-50/50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-red-50 focus:border-red-200 outline-none text-[12px] font-medium transition-all w-full md:w-56"
+                            />
                         </div>
-                    )}
+                        <button className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50/10 transition-all shadow-sm">
+                            <Filter className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Footer Insight */}
-                <div className="mt-20 p-10 bg-gray-900 rounded-[48px] text-white overflow-hidden relative group">
-                    <div className="relative z-10">
-                        <h3 className="text-2xl font-black mb-4 tracking-tight">Developer Insights</h3>
-                        <p className="text-gray-400 mb-8 leading-relaxed font-medium">
-                            Wondering how we handle and display these notifications in real-time? Check out the technical documentation.
-                        </p>
-                        <Link
-                            href="/notifications/explanation.md"
-                            className="inline-flex items-center gap-3 px-8 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl font-bold transition-all group/link"
-                        >
-                            Read technical.md
-                            <span className="group-hover/link:translate-x-1 transition-transform">→</span>
-                        </Link>
+                {/* Notifications List Wrapper */}
+                <div className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+                    <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/20">
+                        <div className="flex items-center gap-2">
+                            <Bell className="w-4 h-4 text-gray-400" />
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">All Recent Activity</span>
+                        </div>
+                        <button className="flex items-center gap-1.5 text-[10px] font-black text-red-600 uppercase tracking-widest hover:text-black transition-colors group">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Mark all read</span>
+                        </button>
                     </div>
-                    {/* Abstract decor */}
-                    <div className="absolute -right-20 -top-20 w-64 h-64 bg-red-600/20 rounded-full blur-3xl group-hover:bg-red-600/30 transition-colors" />
-                    <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl" />
+
+                    <div className="divide-y divide-gray-50">
+                        {MOCK_NOTIFICATIONS.length > 0 ? (
+                            MOCK_NOTIFICATIONS.map((notification) => (
+                                <NotificationItem key={notification.id} notification={notification} />
+                            ))
+                        ) : (
+                            <div className="py-24 flex flex-col items-center justify-center space-y-4">
+                                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100">
+                                    <Bell className="w-8 h-8 text-gray-200" />
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-gray-900 font-black text-sm">All caught up!</p>
+                                    <p className="text-gray-400 text-[11px] font-bold uppercase tracking-widest mt-1">No new notifications for you</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Integration/Newsletter Section - Standardized design */}
+                <div className="p-8 bg-gray-900 rounded-[32px] relative overflow-hidden flex flex-col md:flex-row items-center gap-8 justify-between border border-gray-800">
+                    <div className="flex items-center gap-6 z-10">
+                        <div className="p-4 bg-red-600 rounded-2xl text-white shadow-lg shadow-red-900/30">
+                            <CheckCircle2 className="w-6 h-6" />
+                        </div>
+                        <div className="space-y-1">
+                            <h3 className="text-lg font-black text-white tracking-tight leading-tight">Creator Updates</h3>
+                            <p className="text-[12px] text-gray-400 font-medium italic">Get curated design trends once a week.</p>
+                        </div>
+                    </div>
+                    <button className="z-10 bg-white hover:bg-red-600 hover:text-white text-gray-900 text-[11px] font-black uppercase tracking-widest py-3 px-8 rounded-full transition-all active:scale-95">
+                        Stay Updated
+                    </button>
+                    <div className="absolute right-0 top-0 w-32 h-32 bg-red-600/5 rounded-full blur-3xl" />
                 </div>
             </div>
         </div>
