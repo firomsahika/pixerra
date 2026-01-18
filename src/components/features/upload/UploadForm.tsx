@@ -7,6 +7,7 @@ import { Upload, X, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
 import { createClient } from "@/utils/supabase/client"
 import { useRouter } from "next/navigation"
+import { uploadDesign } from "@/app/actions/design"
 
 export function UploadForm() {
     const [file, setFile] = useState<File | null>(null)
@@ -42,38 +43,16 @@ export function UploadForm() {
 
         setUploading(true)
         try {
-            const user = (await supabase.auth.getUser()).data.user
-            if (!user) throw new Error("Not authenticated")
+            const formData = new FormData()
+            formData.append("file", file)
+            formData.append("title", title)
+            formData.append("description", description)
+            formData.append("category", category)
+            formData.append("tags", tags)
 
-            // 1. Upload image
-            const fileExt = file.name.split('.').pop()
-            const fileName = `${user.id}/${Math.random()}.${fileExt}`
+            await uploadDesign(formData)
 
-            const { error: uploadError, data: uploadData } = await supabase.storage
-                .from('designs')
-                .upload(fileName, file)
-
-            if (uploadError) throw uploadError
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('designs')
-                .getPublicUrl(fileName)
-
-            // 2. Insert record
-            const { error: insertError } = await supabase
-                .from('designs')
-                .insert({
-                    title,
-                    description,
-                    category,
-                    image_url: publicUrl,
-                    user_id: user.id,
-                    tags: tags.split(',').map(t => t.trim()).filter(Boolean)
-                })
-
-            if (insertError) throw insertError
-
-            router.push('/dashboard')
+            router.push('/profile')
             router.refresh()
 
         } catch (error: any) {
@@ -137,13 +116,14 @@ export function UploadForm() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
+                        className="text-slate-500"
                     />
                 </div>
 
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
-                        className="flex w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 min-h-[120px] resize-none"
+                        className="flex text-slate-500 w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 min-h-[120px] resize-none"
                         placeholder="Tell everyone what your design is about"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
@@ -153,7 +133,7 @@ export function UploadForm() {
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Category</label>
                     <select
-                        className="flex h-10 w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                        className="flex h-10 text-slate-500 w-full rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                     >
@@ -171,6 +151,7 @@ export function UploadForm() {
                         placeholder="Add tags separated by comma (e.g. minimal, mobile, dark)"
                         value={tags}
                         onChange={(e) => setTags(e.target.value)}
+                        className="text-slate-500"
                     />
                 </div>
 

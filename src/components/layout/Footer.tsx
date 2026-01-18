@@ -13,7 +13,7 @@ export function Footer() {
                 </div>
 
                 <div>
-                    <h4 className="font-semibold mb-4">For Designers</h4>
+                    <h4 className="font-semibold text-red-600 mb-4">For Designers</h4>
                     <ul className="flex flex-col gap-2 text-sm text-gray-500">
                         <li><a href="#" className="hover:text-black">Explore designs</a></li>
                         <li><a href="#" className="hover:text-black">Upload work</a></li>
@@ -22,7 +22,7 @@ export function Footer() {
                 </div>
 
                 <div>
-                    <h4 className="font-semibold mb-4">Company</h4>
+                    <h4 className="font-semibold mb-4 text-red-600">Company</h4>
                     <ul className="flex flex-col gap-2 text-sm text-gray-500">
                         <li><a href="#" className="hover:text-black">About</a></li>
                         <li><a href="#" className="hover:text-black">Careers</a></li>

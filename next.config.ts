@@ -14,9 +14,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc'
+      },
+      {
+        protocol: 'https',
+        hostname: 'yntyghipvefyonphvapa.supabase.co'
       }
     ],
 
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   },
 };
 
