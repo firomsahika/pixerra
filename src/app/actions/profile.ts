@@ -13,12 +13,13 @@ export async function getProfile(userId: string) {
         .single()
 
     if (error) {
-        console.error("Error fetching profile:", error)
+        console.error(`Error fetching profile for userId: ${userId}`, error)
         return null
     }
 
     return data
 }
+
 
 export async function updateProfile(formData: FormData) {
     const supabase = await createClient()

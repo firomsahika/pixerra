@@ -3,94 +3,13 @@ import Image from "next/image"
 import Link from "next/link"
 import { Heart, FolderPlus, Share2, MessageCircle, MoreHorizontal, ArrowLeft } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-// Mirrored mock data from page.tsx (centralize this later)
-const MOCK_DESIGNS = [
-    {
-        id: "1",
-        title: "Minimalist Workspace",
-        image_url: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop",
-        user: {
-            username: "design_daily",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u1"
-        },
-        likes_count: 120,
-        views_count: 450,
-        description: "A clean and minimal workspace setup for maximum productivity. Features a custom mechanical keyboard and ergonomic chair."
-    },
-    {
-        id: "2",
-        title: "Abstract Gradient",
-        image_url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2070&auto=format&fit=crop",
-        user: {
-            username: "color_master",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u2"
-        },
-        likes_count: 85,
-        views_count: 320,
-        description: "Exploration of color theory using vibrant gradients and abstract shapes. Created using Blender and Photoshop."
-    },
-    {
-        id: "3",
-        title: "Neon City",
-        image_url: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?q=80&w=1974&auto=format&fit=crop",
-        user: {
-            username: "night_owl",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u3"
-        },
-        likes_count: 210,
-        views_count: 890,
-        description: "Cyberpunk inspired city vibes captured in Tokyo at midnight. The neon lights create a perfect contrast with the dark sky."
-    },
-    {
-        id: "4",
-        title: "Geometric Pattern",
-        image_url: "https://images.unsplash.com/photo-1550059378-c07a97637841?q=80&w=1974&auto=format&fit=crop",
-        user: {
-            username: "geo_shapes",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u4"
-        },
-        likes_count: 145,
-        views_count: 600,
-        description: "Recurring geometric patterns found in modern architecture. A study of form and function."
-    },
-    {
-        id: "5",
-        title: "Mountain View",
-        image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop",
-        user: {
-            username: "nature_lover",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u5"
-        },
-        likes_count: 320,
-        views_count: 1200,
-        description: "Breathtaking view of the Alps during sunrise. The lighting was perfect for this shot."
-    },
-    {
-        id: "6",
-        title: "Modern Architecture",
-        image_url: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=1974&auto=format&fit=crop",
-        user: {
-            username: "arch_digest",
-            avatar_url: "https://github.com/shadcn.png",
-            id: "u6"
-        },
-        likes_count: 190,
-        views_count: 750,
-        description: "Contemporary glass building facade reflecting the blue sky. Minimalism in architecture."
-    }
-]
+import { getDesignById, getUserDesigns } from "@/app/actions/design"
+import { format } from "date-fns"
 
 export default async function DesignDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
 
-    // Simulate DB fetch with mock data
-    const design = MOCK_DESIGNS.find(d => d.id === id)
+    const design = await getDesignById(id)
 
     if (!design) {
         return (
@@ -98,11 +17,15 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                 <h2 className="text-2xl font-bold text-gray-900">Design not found</h2>
                 <p className="text-gray-500">This design may have been removed or made private.</p>
                 <Link href="/">
-                    <Button>Back to Home</Button>
+                    <Button className="rounded-full px-8">Back to Home</Button>
                 </Link>
             </div>
         )
     }
+
+    // Fetch more from author
+    const authorDesigns = await getUserDesigns(design.user_id)
+    const otherDesigns = authorDesigns.filter(d => d.id !== design.id).slice(0, 4)
 
     return (
         <div className="min-h-screen bg-white pb-20 pt-10">
@@ -204,17 +127,21 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                             <div className="space-y-4">
                                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tags</h4>
                                 <div className="flex flex-wrap gap-2">
-                                    {["uiux", "minimal", "webdesign", "inspiration"].map((tag) => (
-                                        <span key={tag} className="px-4 py-2 bg-white rounded-full text-sm font-semibold text-gray-600 border border-gray-100 hover:border-red-200 hover:text-red-600 transition-colors cursor-pointer">
-                                            #{tag}
-                                        </span>
-                                    ))}
+                                    {design.tags && design.tags.length > 0 ? (
+                                        design.tags.map((tag: string) => (
+                                            <span key={tag} className="px-4 py-2 bg-white rounded-full text-sm font-semibold text-gray-600 border border-gray-100 hover:border-red-200 hover:text-red-600 transition-colors cursor-pointer">
+                                                #{tag}
+                                            </span>
+                                        ))
+                                    ) : (
+                                        <span className="text-sm text-gray-400">No tags</span>
+                                    )}
                                 </div>
                             </div>
 
                             {/* More Info */}
                             <div className="pt-6 border-t border-gray-200/60">
-                                <p className="text-xs text-gray-400 font-medium">Published on Jan 14, 2026</p>
+                                <p className="text-xs text-gray-400 font-medium">Published on {format(new Date(design.created_at), 'MMM dd, yyyy')}</p>
                             </div>
                         </div>
                     </div>
@@ -226,10 +153,25 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                         <h3 className="text-xl font-bold text-gray-900">More by {design.user.username}</h3>
                         <Link href={`/profile/${design.user.username}`} className="text-red-600 font-semibold hover:underline text-sm">View Profile</Link>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 opacity-60">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="aspect-[4/3] rounded-2xl bg-gray-100 animate-pulse" />
-                        ))}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {otherDesigns.length > 0 ? (
+                            otherDesigns.map((d) => (
+                                <Link key={d.id} href={`/design/${d.id}`} className="group aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100 border border-gray-100 relative">
+                                    <Image
+                                        src={d.image_url}
+                                        alt={d.title}
+                                        fill
+                                        className="object-cover transition-transform group-hover:scale-105"
+                                    />
+                                </Link>
+                            ))
+                        ) : (
+                            [1, 2, 3, 4].map((i) => (
+                                <div key={i} className="aspect-[4/3] rounded-2xl bg-gray-50 flex items-center justify-center border border-dashed border-gray-200">
+                                    <div className="w-8 h-8 rounded-full bg-gray-100" />
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>

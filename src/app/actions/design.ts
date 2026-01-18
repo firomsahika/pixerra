@@ -126,6 +126,26 @@ export async function getUserDesigns(userId: string) {
     return data
 }
 
+export async function getDesignById(id: string) {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+        .from('designs')
+        .select(`
+            *,
+            user:profiles(*)
+        `)
+        .eq('id', id)
+        .single()
+
+    if (error) {
+        console.error("Error fetching design by id:", error)
+        return null
+    }
+
+    return data
+}
+
 export async function toggleLike(designId: string) {
     const supabase = await createClient()
 
