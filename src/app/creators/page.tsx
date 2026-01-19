@@ -9,6 +9,7 @@ type FilterType = "popular" | "staff" | "recent"
 
 export default function CreatorsPage() {
     const [filter, setFilter] = useState<FilterType>("popular")
+    const [images, setImages] = useState<string[]>([])
 
     const filteredCreators = useMemo(() => {
         const creators = [...MOCK_CREATORS]
@@ -25,6 +26,17 @@ export default function CreatorsPage() {
                 return creators
         }
     }, [filter])
+
+    // Functionality for multi-upload of images
+    const handleMultiUpload = (files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        const uploadedImages = Array.from(files).map(file => URL.createObjectURL(file));
+        setImages(prevImages => [...prevImages, ...uploadedImages])
+        // Logic to handle the uploaded images
+        // Set the first image as thumbnail
+        const thumbnail = uploadedImages[0];
+        // Update state or perform actions with images
+    };
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-white pt-24 pb-20 px-4">
@@ -134,6 +146,25 @@ export default function CreatorsPage() {
                     {/* Background abstract decor */}
                     <div className="absolute top-0 right-[-10%] w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[120px]" />
                     <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-amber-600/5 rounded-full blur-[100px]" />
+                </div>
+
+                {/* File upload input for creators */}
+                <div className="mt-16">
+                    <input
+                        type="file"
+                        multiple
+                        onChange={(e) => handleMultiUpload(e.target.files)}
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition-all"
+                    />
+                </div>
+
+                {/* Display uploaded images below the thumbnail */}
+                <div className="uploaded-images grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+                    {images.map((image, index) => (
+                        <div key={index} className="uploaded-image-wrapper relative rounded-[32px] overflow-hidden group">
+                            <img src={image} alt={`Uploaded design ${index + 1}`} className="uploaded-image h-full w-full object-cover rounded-[32px] transition-transform duration-300 ease-in-out group-hover:scale-105" />
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

@@ -10,8 +10,8 @@ import { useRouter } from "next/navigation"
 import { uploadDesign } from "@/app/actions/design"
 
 export function UploadForm() {
-    const [file, setFile] = useState<File | null>(null)
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+    const [files, setFiles] = useState<File[]>([])
+    const [previewUrls, setPreviewUrls] = useState<string[]>([])
     const [uploading, setUploading] = useState(false)
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -22,29 +22,36 @@ export function UploadForm() {
     const supabase = createClient()
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files?.[0]
-        if (selectedFile) {
-            setFile(selectedFile)
-            const url = URL.createObjectURL(selectedFile)
-            setPreviewUrl(url)
+        const selected = e.target.files ? Array.from(e.target.files) : []
+        if (selected.length > 0) {
+            setFiles(selected)
+            const urls = selected.map(f => URL.createObjectURL(f))
+            setPreviewUrls(urls)
         }
     }
 
-    const removeFile = () => {
-        setFile(null)
-        if (previewUrl) URL.revokeObjectURL(previewUrl)
-        setPreviewUrl(null)
+    const removeFileAt = (index: number) => {
+        const f = files[index]
+        const url = previewUrls[index]
+        if (url) URL.revokeObjectURL(url)
+        const newFiles = files.slice()
+        const newUrls = previewUrls.slice()
+        newFiles.splice(index, 1)
+        newUrls.splice(index, 1)
+        setFiles(newFiles)
+        setPreviewUrls(newUrls)
         if (fileInputRef.current) fileInputRef.current.value = ""
     }
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!file || !title) return
+        if (files.length === 0 || !title) return
 
         setUploading(true)
         try {
             const formData = new FormData()
-            formData.append("file", file)
+            // Append all files under the 'files' key
+            files.forEach((f) => formData.append("files", f))
             formData.append("title", title)
             formData.append("description", description)
             formData.append("category", category)
@@ -70,17 +77,16 @@ export function UploadForm() {
                 <label className="block text-sm font-medium text-gray-700">Design Preview</label>
                 <div
                     onClick={() => !previewUrl && fileInputRef.current?.click()}
-                    className={`
-               aspect-[3/4] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors relative overflow-hidden bg-gray-50
+                    className={`aspect-[3/4] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors relative overflow-hidden bg-gray-50
                ${previewUrl ? "border-gray-200" : "border-gray-300 hover:border-gray-400"}
             `}
                 >
-                    {previewUrl ? (
+                    {previewUrls.length > 0 ? (
                         <>
-                            <Image src={previewUrl} alt="Preview" fill className="object-cover" />
+                            <Image src={previewUrls[0]} alt="Preview" fill className="object-cover" />
                             <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); removeFile() }}
+                                onClick={(e) => { e.stopPropagation(); removeFileAt(0) }}
                                 className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition"
                             >
                                 <X className="w-5 h-5" />
@@ -102,9 +108,23 @@ export function UploadForm() {
                         type="file"
                         accept="image/*"
                         className="hidden"
+                        multiple
                         onChange={handleFileChange}
                     />
                 </div>
+                {/* Thumbnails of additional pages */}
+                {previewUrls.length > 1 && (
+                    <div className="mt-3 flex gap-3 overflow-auto">
+                        {previewUrls.map((p, i) => (
+                            <div key={i} className="w-20 h-20 rounded-xl overflow-hidden relative border border-gray-100">
+                                <Image src={p} alt={`preview-${i}`} fill className="object-cover" />
+                                <button onClick={() => removeFileAt(i)} className="absolute top-1 right-1 p-1 bg-black/40 text-white rounded-full">
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Right: Form Details */}

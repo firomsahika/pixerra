@@ -75,7 +75,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                     </div>
 
                     {/* Hero Image Presentation */}
-                    <DesignImagePresentation imageUrl={design.image_url} title={design.title} />
+                    <DesignImagePresentation imageUrl={design.image_url} imageUrls={design.image_urls} title={design.title} />
 
                     {/* Content Section */}
                     <div className="flex flex-col lg:flex-row border-t border-gray-100">

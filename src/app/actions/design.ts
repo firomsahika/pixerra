@@ -16,25 +16,35 @@ export async function uploadDesign(formData: FormData) {
     const description = formData.get("description") as string
     const category = formData.get("category") as string
     const tagsString = formData.get("tags") as string
-    const file = formData.get("file") as File
+    // Support multiple files uploaded under 'files' or single 'file' for backward compatibility
+    const files = (formData.getAll("files") as File[]).filter(Boolean)
+    const singleFile = formData.get("file") as File | null
 
-    if (!file || !title) {
+    const uploadFiles = files.length > 0 ? files : (singleFile ? [singleFile] : [])
+
+    if (uploadFiles.length === 0 || !title) {
         throw new Error("Missing required fields")
     }
 
-    // 1. Upload image to Storage
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${user.id}/${Math.random().toString(36).substring(2)}.${fileExt}`
+    // 1. Upload each image to Storage and collect public URLs
+    const publicUrls: string[] = []
 
-    const { error: uploadError } = await supabase.storage
-        .from('designs')
-        .upload(fileName, file)
+    for (const f of uploadFiles) {
+        const fileExt = f.name.split('.').pop()
+        const fileName = `${user.id}/${Math.random().toString(36).substring(2)}.${fileExt}`
 
-    if (uploadError) throw uploadError
+        const { error: uploadError } = await supabase.storage
+            .from('designs')
+            .upload(fileName, f)
 
-    const { data: { publicUrl } } = supabase.storage
-        .from('designs')
-        .getPublicUrl(fileName)
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('designs')
+            .getPublicUrl(fileName)
+
+        publicUrls.push(publicUrl)
+    }
 
     // 2. Ensure Profile exists (to avoid foreign key violation)
     const { data: profile } = await supabase
@@ -66,7 +76,8 @@ export async function uploadDesign(formData: FormData) {
             title,
             description,
             category,
-            image_url: publicUrl,
+            image_url: publicUrls[0],
+            image_urls: publicUrls,
             user_id: user.id,
             tags: tagsString.split(',').map(t => t.trim()).filter(Boolean)
         })
