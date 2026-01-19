@@ -28,7 +28,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
     const otherDesigns = authorDesigns.filter(d => d.id !== design.id).slice(0, 4)
 
     return (
-        <div className="min-h-screen bg-white pb-20 pt-10">
+        <div className="min-h-screen bg-white pb-20 pt-10" suppressHydrationWarning>
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Subtle Breadcrumbs */}
                 <Link href="/" className="inline-flex items-center text-sm font-medium text-gray-400 hover:text-gray-900 transition-colors mb-8 group">
@@ -37,7 +37,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                 </Link>
 
                 {/* Main Design Card */}
-                <div className="bg-white rounded-[32px] border border-gray-100/80 shadow-[0_20px_50px_rgba(0,0,0,0.04)] overflow-hidden">
+                <div className="bg-white rounded-[32px] border border-gray-100/80 shadow-[0_20px_50px_rgba(0,0,0,0.04)] overflow-hidden" suppressHydrationWarning>
 
                     {/* Header: Author & Actions */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 md:p-8 space-y-4 sm:space-y-0">
@@ -141,7 +141,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
 
                             {/* More Info */}
                             <div className="pt-6 border-t border-gray-200/60">
-                                <p className="text-xs text-gray-400 font-medium">Published on {format(new Date(design.created_at), 'MMM dd, yyyy')}</p>
+                                <p className="text-xs text-gray-400 font-medium" suppressHydrationWarning>Published on {format(new Date(design.created_at), 'MMM dd, yyyy')}</p>
                             </div>
                         </div>
                     </div>

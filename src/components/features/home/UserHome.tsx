@@ -55,7 +55,7 @@ export function UserHome({ user, initialDesigns }: UserHomeProps) {
     return (
         <div className="flex flex-col min-h-screen bg-white">
             {/* Hero Section for Logged-in User */}
-            <section className="relative pt-20 pb-16 px-6 overflow-hidden">
+            <section className="relative pt-20 pb-16 px-6 overflow-hidden" suppressHydrationWarning>
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-50 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px] -z-10" />
                 <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-red-50/50 rounded-full translate-y-1/2 -translate-x-1/2 blur-[80px] -z-10" />
@@ -100,7 +100,7 @@ export function UserHome({ user, initialDesigns }: UserHomeProps) {
             <section className="pb-24 px-6">
                 <div className="max-w-[2000px] mx-auto">
                     {/* Category Filter Bar */}
-                    <div className="sticky top-[72px] z-30 py-6 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-12">
+                    <div className="sticky top-[72px] z-30 py-6 bg-white/80 backdrop-blur-xl border-b border-gray-100 mb-12" suppressHydrationWarning>
                         <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-gray-100 rounded-lg text-gray-500 mr-2">

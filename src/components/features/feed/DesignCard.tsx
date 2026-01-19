@@ -52,7 +52,7 @@ export function DesignCard({ design }: DesignCardProps) {
     }
 
     return (
-        <div className="group relative break-inside-avoid mb-6 rounded-2xl overflow-hidden cursor-pointer">
+        <div className="group relative break-inside-avoid mb-6 rounded-2xl overflow-hidden cursor-pointer" suppressHydrationWarning>
             <Link href={`/design/${design.id}`}>
                 <div className="relative w-full">
                     <Image

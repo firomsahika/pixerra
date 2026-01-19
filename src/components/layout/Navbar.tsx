@@ -35,9 +35,9 @@ export function Navbar({ user }: NavbarProps) {
     const isActive = (path: string) => pathname === path
 
     return (
-        <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100">
+        <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100" suppressHydrationWarning>
             <div className="flex items-center justify-between h-20 px-4 md:px-8">
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2" suppressHydrationWarning>
                     <div className="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">P</div>
                     <span className="text-red-600 text-xl font-bold tracking-tight">Pixerra</span>
                 </Link>
@@ -97,7 +97,7 @@ export function Navbar({ user }: NavbarProps) {
                                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                             <Avatar className="h-8 w-8">
                                                 <AvatarImage src={user.user_metadata.avatar_url} alt={user.email || ""} />
-                                                <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                                                <AvatarFallback suppressHydrationWarning>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                                             </Avatar>
                                         </Button>
                                     </DropdownMenuTrigger>

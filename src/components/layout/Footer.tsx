@@ -1,6 +1,6 @@
 export function Footer() {
     return (
-        <footer className="w-full bg-white border-t border-gray-100 py-12 px-4 md:px-8">
+        <footer className="w-full bg-white border-t border-gray-100 py-12 px-4 md:px-8" suppressHydrationWarning>
             <div className="max-w-[2000px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2">
