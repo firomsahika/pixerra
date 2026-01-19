@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 
+
 export async function uploadDesign(formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -83,12 +84,15 @@ export async function uploadDesign(formData: FormData) {
 
 export async function getDesigns(category?: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     let query = supabase
         .from('designs')
         .select(`
             *,
-            user:profiles(username, avatar_url)
+            user:profiles(username, avatar_url),
+            likes_count:likes(count),
+            views_count:views(count)
         `)
         .order('created_at', { ascending: false })
 
@@ -103,17 +107,38 @@ export async function getDesigns(category?: string) {
         return []
     }
 
-    return data
+    let likedDesignIds = new Set<string>()
+    if (user && data.length > 0) {
+        const { data: userLikes } = await supabase
+            .from('likes')
+            .select('design_id')
+            .eq('user_id', user.id)
+            .in('design_id', data.map((d: any) => d.id))
+        
+        if (userLikes) {
+            userLikes.forEach((l: any) => likedDesignIds.add(l.design_id))
+        }
+    }
+
+    return data.map((design: any) => ({
+        ...design,
+        likes_count: design.likes_count?.[0]?.count || 0,
+        views_count: design.views_count?.[0]?.count || 0,
+        is_liked: likedDesignIds.has(design.id)
+    }))
 }
 
 export async function getUserDesigns(userId: string) {
     const supabase = await createClient()
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
 
     const { data, error } = await supabase
         .from('designs')
         .select(`
             *,
-            user:profiles(username, avatar_url)
+            user:profiles(username, avatar_url),
+            likes_count:likes(count),
+            views_count:views(count)
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
@@ -123,17 +148,38 @@ export async function getUserDesigns(userId: string) {
         return []
     }
 
-    return data
+    let likedDesignIds = new Set<string>()
+    if (currentUser && data.length > 0) {
+        const { data: userLikes } = await supabase
+            .from('likes')
+            .select('design_id')
+            .eq('user_id', currentUser.id)
+            .in('design_id', data.map((d: any) => d.id))
+        
+        if (userLikes) {
+            userLikes.forEach((l: any) => likedDesignIds.add(l.design_id))
+        }
+    }
+
+    return data.map((design: any) => ({
+        ...design,
+        likes_count: design.likes_count?.[0]?.count || 0,
+        views_count: design.views_count?.[0]?.count || 0,
+        is_liked: likedDesignIds.has(design.id)
+    }))
 }
 
 export async function getDesignById(id: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
     const { data, error } = await supabase
         .from('designs')
         .select(`
             *,
-            user:profiles(*)
+            user:profiles(*),
+            likes_count:likes(count),
+            views_count:views(count)
         `)
         .eq('id', id)
         .single()
@@ -143,7 +189,38 @@ export async function getDesignById(id: string) {
         return null
     }
 
-    return data
+    const likesCount = data.likes_count?.[0]?.count || 0
+    const viewsCount = data.views_count?.[0]?.count || 0
+
+    let is_liked = false
+    if (user) {
+        const { count } = await supabase
+            .from('likes')
+            .select('*', { count: 'exact', head: true })
+            .eq('design_id', id)
+            .eq('user_id', user.id)
+        is_liked = count! > 0
+    }
+
+    return {
+        ...data,
+        likes_count: likesCount,
+        views_count: viewsCount,
+        is_liked
+    }
+}
+
+export async function incrementViewCount(designId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Insert into views table
+    await supabase.from('views').insert({
+        design_id: designId,
+        user_id: user?.id || null
+    })
+
+    revalidatePath(`/design/${designId}`)
 }
 
 export async function toggleLike(designId: string) {

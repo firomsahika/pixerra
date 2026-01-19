@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { MasonryGrid } from "@/components/features/feed/MasonryGrid"
 import { Sparkles, ArrowRight, Filter, Loader2 } from "lucide-react"
 import { getDesigns } from "@/app/actions/design"
+import Link from "next/link"
+
 
 interface Design {
     id: string
@@ -88,9 +90,11 @@ export function UserHome({ user, initialDesigns }: UserHomeProps) {
                             <Button variant="outline" className="rounded-full px-6 h-12 font-bold border-2 hover:bg-gray-50 transition-all">
                                 View Your Feed
                             </Button>
-                            <Button className="rounded-full px-6 h-12 font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 transition-all">
-                                Post a Design
-                            </Button>
+                            <Link href="/upload">
+                                <Button className="rounded-full px-6 h-12 font-bold bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 transition-all">
+                                    Post a Design
+                                </Button>
+                            </Link>
                         </div>
                     </motion.div>
                 </div>

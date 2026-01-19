@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { useEffect } from 'react'
 import { Heart, Eye, FolderPlus } from "lucide-react"
 import { toggleLike } from "@/app/actions/design"
 import { useState } from "react"
@@ -26,8 +27,14 @@ interface DesignCardProps {
 
 export function DesignCard({ design }: DesignCardProps) {
     const [isLiked, setIsLiked] = useState(design.is_liked || false)
-    const [likesCount, setLikesCount] = useState(design.likes_count)
+    const [likesCount, setLikesCount] = useState(design.likes_count ?? 0)
     const [isLiking, setIsLiking] = useState(false)
+
+    // Sync state with props when they change (e.g. after server-side revalidation)
+    useEffect(() => {
+        if (design.is_liked !== undefined) setIsLiked(design.is_liked)
+        if (design.likes_count !== undefined) setLikesCount(design.likes_count)
+    }, [design.id, design.is_liked, design.likes_count])
 
     const handleLike = async (e: React.MouseEvent) => {
         e.preventDefault() // Prevent navigation

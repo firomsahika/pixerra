@@ -5,6 +5,10 @@ import { Heart, FolderPlus, Share2, MessageCircle, MoreHorizontal, ArrowLeft } f
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getDesignById, getUserDesigns } from "@/app/actions/design"
 import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { ViewCounter } from "@/components/features/design/ViewCounter"
+import { DesignImagePresentation } from "@/components/features/design/DesignImagePresentation"
+
 
 export default async function DesignDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -64,25 +68,14 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                                 Save
                             </Button>
                             <Button className="flex-1 sm:flex-none gap-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-medium h-11 px-8 shadow-md shadow-red-100 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                                <Heart className="w-4 h-4 fill-current" />
-                                Like
+                                <Heart className={cn("w-4 h-4", design.is_liked && "fill-current")} />
+                                {design.is_liked ? 'Liked' : 'Like'}
                             </Button>
                         </div>
                     </div>
 
                     {/* Hero Image Presentation */}
-                    <div className="px-6 pb-6 md:px-8 md:pb-8">
-                        <div className="relative w-full rounded-2xl overflow-hidden bg-gray-50/30 flex items-center justify-center min-h-[400px] border border-gray-100/50">
-                            <Image
-                                src={design.image_url}
-                                alt={design.title}
-                                width={1600}
-                                height={1200}
-                                className="w-full h-auto object-contain shadow-2xl shadow-black/5"
-                                priority
-                            />
-                        </div>
-                    </div>
+                    <DesignImagePresentation imageUrl={design.image_url} title={design.title} />
 
                     {/* Content Section */}
                     <div className="flex flex-col lg:flex-row border-t border-gray-100">
@@ -115,11 +108,11 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1">
                                     <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Views</p>
-                                    <p className="text-2xl font-bold text-gray-900">{design.views_count.toLocaleString()}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{(design.views_count ?? 0).toLocaleString()}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">Likes</p>
-                                    <p className="text-2xl font-bold text-gray-900">{design.likes_count.toLocaleString()}</p>
+                                    <p className="text-2xl font-bold text-gray-900">{(design.likes_count ?? 0).toLocaleString()}</p>
                                 </div>
                             </div>
 
@@ -175,6 +168,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ i
                     </div>
                 </div>
             </div>
+            <ViewCounter designId={id} />
         </div>
     )
 }
