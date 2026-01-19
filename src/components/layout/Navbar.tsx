@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, Bell, MessageCircle, LogOut, User as UserIcon } from "lucide-react"
+import { Search, Bell, MessageCircle, LogOut, Sun, Moon } from "lucide-react"
+import { useTheme } from "@/components/providers/ThemeProvider"
 import { User } from "@supabase/supabase-js"
 import {
     DropdownMenu,
@@ -33,10 +34,11 @@ export function Navbar({ user }: NavbarProps) {
     }
 
     const isActive = (path: string) => pathname === path
+    const { theme, toggleTheme } = useTheme()
 
     return (
         <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100" suppressHydrationWarning>
-            <div className="flex items-center justify-between h-20 px-4 md:px-8">
+            <div className="flex items-center justify-between h-20 px-4 md:px-8" suppressHydrationWarning>
                 <Link href="/" className="flex items-center gap-2" suppressHydrationWarning>
                     <div className="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">P</div>
                     <span className="text-red-600 text-xl font-bold tracking-tight">Pixerra</span>
@@ -80,6 +82,19 @@ export function Navbar({ user }: NavbarProps) {
                     </Link>
 
                     <div className="flex items-center gap-2">
+                        {/* Theme toggle */}
+                        <button
+                            type="button"
+                            onClick={toggleTheme}
+                            className="hidden md:inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100"
+                            aria-label="Toggle theme"
+                        >
+                            {theme === "dark" ? (
+                                <Sun className="w-5 h-5 text-yellow-400" />
+                            ) : (
+                                <Moon className="w-5 h-5 text-gray-600" />
+                            )}
+                        </button>
                         {user ? (
                             <>
                                 <Link href="/notifications">

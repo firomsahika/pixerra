@@ -52,3 +52,20 @@ export async function updateProfile(formData: FormData) {
     revalidatePath(`/profile/${user.id}`)
     revalidatePath("/creators")
 }
+
+export async function getProfileByUsername(username: string) {
+    const supabase = await createClient()
+
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .maybeSingle()
+
+    if (error) {
+        console.error(`Error fetching profile for username: ${username}`, error)
+        return null
+    }
+
+    return data
+}

@@ -5,6 +5,93 @@
   --foreground: #171717;
 }
 
+html.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+html.light {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Utility overrides for a clean dark theme (keeps it simple and professional) */
+html.dark .bg-white { background-color: #0b1020 !important }
+html.dark .text-gray-900 { color: #e6eef6 !important }
+html.dark .border-gray-100 { border-color: rgba(255,255,255,0.04) !important }
+html.dark .bg-gray-50 { background-color: rgba(255,255,255,0.02) !important }
+
+/* Creator cards: make their white overlays and borders subtle in dark mode */
+html.dark .bg-white\/40 { background-color: rgba(255,255,255,0.03) !important }
+html.dark .bg-white\/60 { background-color: rgba(255,255,255,0.04) !important }
+html.dark .bg-white\/80 { background-color: rgba(255,255,255,0.06) !important }
+html.dark .border-white { border-color: rgba(255,255,255,0.06) !important }
+html.dark .shadow-2xl { box-shadow: 0 12px 30px rgba(0,0,0,0.6) !important }
+html.dark .group-hover\:bg-red-100\/50:hover { background-color: rgba(120,25,25,0.08) !important }
+
+/* Adjust avatar fallback gradient to be visible in dark mode */
+html.dark .from-gray-100 { --tw-gradient-from: #1a1f2a !important }
+html.dark .to-gray-200 { --tw-gradient-to: #10131a !important }
+
+html.dark .bg-gray-100 { background-color: rgba(255,255,255,0.03) !important }
+html.dark .text-gray-500, html.dark .text-gray-400, html.dark .text-gray-600 { color: rgba(255,255,255,0.7) !important }
+html.dark .hover\:bg-gray-50:hover { background-color: rgba(255,255,255,0.02) !important }
+html.dark .hover\:bg-gray-100:hover { background-color: rgba(255,255,255,0.03) !important }
+
+/* Opacity variants and common utility overrides used across pages */
+html.dark .bg-white\/80 { background-color: rgba(11,16,32,0.6) !important }
+html.dark .bg-white\/50 { background-color: rgba(11,16,32,0.5) !important }
+html.dark .bg-white\/30 { background-color: rgba(11,16,32,0.3) !important }
+html.dark .bg-white\/20 { background-color: rgba(11,16,32,0.2) !important }
+html.dark .bg-white\/10 { background-color: rgba(11,16,32,0.1) !important }
+html.dark .bg-white { background-color: #0b1020 !important }
+html.dark .bg-gray-50\/50 { background-color: rgba(255,255,255,0.03) !important }
+html.dark .bg-gray-100 { background-color: rgba(255,255,255,0.03) !important }
+html.dark .bg-gray-50 { background-color: rgba(255,255,255,0.02) !important }
+
+/* Homepage Guest Landing: mesh gradient & hero overrides */
+html.dark .mesh-gradient {
+  background-color: #071025 !important;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(10,12,20,0.7) 0, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(20,12,30,0.6) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(10,12,30,0.6) 0, transparent 50%);
+}
+
+/* Make the hero CTA pill and cards darker but keep accent visible */
+html.dark .bg-white\/80 { background-color: rgba(11,16,32,0.6) !important }
+html.dark .border-red-100 { border-color: rgba(255,100,100,0.06) !important }
+html.dark .bg-red-50 { background-color: rgba(120,25,25,0.06) !important }
+html.dark .bg-amber-200\/30 { background-color: rgba(120,80,20,0.04) !important }
+
+/* Ensure large white CTA blocks (like the final CTA) are darker */
+html.dark .bg-red-600 { background-color: #7b2b2b !important }
+html.dark .text-red-600 { color: #ffb3b3 !important }
+
+/* Buttons and selectable chips (category buttons) */
+html.dark .border-transparent { border-color: transparent !important }
+html.dark .hover\:border-gray-200:hover { border-color: rgba(255,255,255,0.06) !important }
+html.dark .text-gray-500 { color: rgba(255,255,255,0.72) !important }
+html.dark .text-gray-400 { color: rgba(255,255,255,0.64) !important }
+html.dark .text-gray-600 { color: rgba(255,255,255,0.8) !important }
+
+/* Navbar search input: make background more visible in dark mode */
+html.dark nav .bg-gray-100 { background-color: rgba(255,255,255,0.08) !important }
+html.dark nav input { color: var(--foreground) !important }
+html.dark nav input:focus { background-color: rgba(255,255,255,0.14) !important; color: var(--foreground) !important }
+
+/* Cards, lists, and conversation items */
+html.dark .rounded-\[32px\], html.dark .rounded-2xl, html.dark .rounded-xl {
+  background-clip: padding-box;
+}
+/* Match any element using Tailwind shadow utilities and apply a darker shadow in dark mode */
+html.dark [class*="shadow-"] { box-shadow: 0 20px 50px rgba(0,0,0,0.6) !important }
+html.dark .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.6) !important }
+
+/* Ensure borders on dark background are subtle */
+html.dark .border-gray-100 { border-color: rgba(255,255,255,0.04) !important }
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

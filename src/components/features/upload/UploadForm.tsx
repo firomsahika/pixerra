@@ -76,9 +76,9 @@ export function UploadForm() {
             <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-700">Design Preview</label>
                 <div
-                    onClick={() => !previewUrl && fileInputRef.current?.click()}
+                    onClick={() => previewUrls.length === 0 && fileInputRef.current?.click()}
                     className={`aspect-[3/4] rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-colors relative overflow-hidden bg-gray-50
-               ${previewUrl ? "border-gray-200" : "border-gray-300 hover:border-gray-400"}
+               ${previewUrls.length > 0 ? "border-gray-200" : "border-gray-300 hover:border-gray-400"}
             `}
                 >
                     {previewUrls.length > 0 ? (
@@ -177,7 +177,7 @@ export function UploadForm() {
 
                 <div className="pt-4 flex items-center justify-end gap-4">
                     <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
-                    <Button type="submit" isLoading={uploading} disabled={!file || !title}>Publish Design</Button>
+                    <Button type="submit" isLoading={uploading} disabled={files.length === 0 || !title}>Publish Design</Button>
                 </div>
             </div>
         </form>
