@@ -5,6 +5,8 @@ import { getProfileByUsername } from "@/app/actions/profile"
 import { getUserDesigns } from "@/app/actions/design"
 import { MasonryGrid } from "@/components/features/feed/MasonryGrid"
 
+// public profile page
+
 export default async function PublicProfilePage({ params }: { params: Promise<{ username: string }> }) {
     const { username } = await params
 
