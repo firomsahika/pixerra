@@ -3,10 +3,12 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect } from 'react'
-import { Heart, Eye, FolderPlus } from "lucide-react"
+import { Heart, Eye, FolderPlus, Trash } from "lucide-react"
 import { toggleLike } from "@/app/actions/design"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { createClient } from '@/utils/supabase/client'
+import { useRouter } from 'next/navigation'
 
 interface Design {
     id: string
@@ -19,6 +21,7 @@ interface Design {
     likes_count: number
     views_count: number
     is_liked?: boolean
+    user_id?: string
 }
 
 interface DesignCardProps {
@@ -29,6 +32,19 @@ export function DesignCard({ design }: DesignCardProps) {
     const [isLiked, setIsLiked] = useState(design.is_liked || false)
     const [likesCount, setLikesCount] = useState(design.likes_count ?? 0)
     const [isLiking, setIsLiking] = useState(false)
+    const [isOwner, setIsOwner] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+        // Determine ownership on client-side using browser supabase session
+        const supabase = createClient()
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user && design.user_id) {
+                setIsOwner(data.user.id === design.user_id)
+            }
+        }).catch(() => {})
+    }, [design.user_id])
 
     // Sync state with props when they change (e.g. after server-side revalidation)
     useEffect(() => {
@@ -72,9 +88,39 @@ export function DesignCard({ design }: DesignCardProps) {
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
 
                     <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
-                            <FolderPlus className="w-5 h-5" />
-                        </button>
+                        {isOwner ? (
+                            <button
+                                onClick={async (e) => {
+                                    e.preventDefault()
+                                    const ok = confirm('Delete this design? This action cannot be undone.')
+                                    if (!ok) return
+                                    setIsDeleting(true)
+                                    try {
+                                        const res = await fetch('/api/design/delete', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ designId: design.id })
+                                        })
+
+                                        if (!res.ok) throw new Error('Delete failed')
+                                        router.refresh()
+                                    } catch (err) {
+                                        console.error('Failed to delete design', err)
+                                        alert('Failed to delete design')
+                                    } finally {
+                                        setIsDeleting(false)
+                                    }
+                                }}
+                                className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
+                                disabled={isDeleting}
+                            >
+                                <Trash className="w-5 h-5" />
+                            </button>
+                        ) : (
+                            <button className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition">
+                                <FolderPlus className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
 
                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">

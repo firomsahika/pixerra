@@ -221,6 +221,22 @@ export async function getDesignById(id: string) {
     }
 }
 
+export async function deleteDesign(designId: string) {      
+    const supabase =  await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+        throw new Error("Unauthorized")
+    }
+
+    // delete design
+    await supabase.from('designs').delete({
+        design_id: designId,
+        user_id: user.id
+    })
+
+    router.refresh()
+}
 export async function incrementViewCount(designId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
