@@ -43,7 +43,7 @@ export function DesignCard({ design }: DesignCardProps) {
             if (data.user && design.user_id) {
                 setIsOwner(data.user.id === design.user_id)
             }
-        }).catch(() => {})
+        }).catch(() => { })
     }, [design.user_id])
 
     // Sync state with props when they change (e.g. after server-side revalidation)
@@ -74,6 +74,29 @@ export function DesignCard({ design }: DesignCardProps) {
         }
     }
 
+    // handle delete 
+    const handleDelete = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        const ok = confirm('Delete this design? This action cannot be undone.')
+        if (!ok) return
+        setIsDeleting(true)
+        try {
+            const res = await fetch('/api/design/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ designId: design.id })
+            })
+
+            if (!res.ok) throw new Error('Delete failed')
+            router.refresh()
+        } catch (err) {
+            console.error('Failed to delete design', err)
+            alert('Failed to delete design')
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
     return (
         <div className="group relative break-inside-avoid mb-6 rounded-2xl overflow-hidden cursor-pointer" suppressHydrationWarning>
             <Link href={`/design/${design.id}`}>
@@ -90,27 +113,7 @@ export function DesignCard({ design }: DesignCardProps) {
                     <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         {isOwner ? (
                             <button
-                                onClick={async (e) => {
-                                    e.preventDefault()
-                                    const ok = confirm('Delete this design? This action cannot be undone.')
-                                    if (!ok) return
-                                    setIsDeleting(true)
-                                    try {
-                                        const res = await fetch('/api/design/delete', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ designId: design.id })
-                                        })
-
-                                        if (!res.ok) throw new Error('Delete failed')
-                                        router.refresh()
-                                    } catch (err) {
-                                        console.error('Failed to delete design', err)
-                                        alert('Failed to delete design')
-                                    } finally {
-                                        setIsDeleting(false)
-                                    }
-                                }}
+                                onClick={handleDelete}
                                 className="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
                                 disabled={isDeleting}
                             >
