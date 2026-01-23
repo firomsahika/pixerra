@@ -10,7 +10,8 @@ const MOCK_NOTIFICATIONS = [
         created_at: "2024-01-20T10:00:00Z",
         is_read: false,
         actor: {
-            full_name: "Alex Rivera",
+            first_name: "Alex",
+            last_name: "Rivera",
             avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop",
             username: "arivera"
         },
@@ -25,7 +26,8 @@ const MOCK_NOTIFICATIONS = [
         created_at: "2024-01-19T14:30:00Z",
         is_read: true,
         actor: {
-            full_name: "Sarah Chen",
+            first_name: "Sarah",
+            last_name: "Chen",
             avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
             username: "schen"
         }
@@ -36,7 +38,8 @@ const MOCK_NOTIFICATIONS = [
         created_at: "2024-01-18T09:15:00Z",
         is_read: false,
         actor: {
-            full_name: "Marcus Thorne",
+            first_name: "Marcus",
+            last_name: "Thorne",
             avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
             username: "mthorne"
         }

@@ -10,9 +10,10 @@ interface NotificationItemProps {
         created_at: string
         is_read: boolean
         actor: {
-            full_name: string
-            avatar_url: string
-            username: string
+            first_name?: string
+            last_name?: string
+            avatar_url?: string
+            username?: string
         }
         design?: {
             id: string
@@ -35,29 +36,36 @@ export function NotificationItem({ notification }: NotificationItemProps) {
         }
     }
 
+    const actorName = (() => {
+        const a = notification.actor
+        if (!a) return 'User'
+        const name = `${a.first_name || ''}${a.last_name ? ' ' + a.last_name : ''}`.trim()
+        return name || a.username || 'User'
+    })()
+
     const getMessage = () => {
         switch (notification.type) {
             case "like":
                 return (
-                    <p className="text-[13px] leading-snug text-gray-500 font-medium">
-                        <span className="font-bold text-gray-900">{notification.actor.full_name}</span> liked your design{" "}
+                        <p className="text-[13px] leading-snug text-gray-500 font-medium">
+                        <span className="font-bold text-gray-900">{actorName}</span> liked your design{" "}
                         <span className="font-bold text-gray-900">"{notification.design?.title}"</span>
                     </p>
                 )
             case "message":
                 return (
-                    <p className="text-[13px] leading-snug text-gray-500 font-medium">
-                        <span className="font-bold text-gray-900">{notification.actor.full_name}</span> sent you a new message.
+                        <p className="text-[13px] leading-snug text-gray-500 font-medium">
+                        <span className="font-bold text-gray-900">{actorName}</span> sent you a new message.
                     </p>
                 )
             case "follow":
                 return (
-                    <p className="text-[13px] leading-snug text-gray-500 font-medium">
-                        <span className="font-bold text-gray-900">{notification.actor.full_name}</span> started following you.
+                        <p className="text-[13px] leading-snug text-gray-500 font-medium">
+                        <span className="font-bold text-gray-900">{actorName}</span> started following you.
                     </p>
                 )
             default:
-                return <p className="text-[13px] leading-snug text-gray-500 font-medium">New activity from <span className="font-bold text-gray-900">{notification.actor.full_name}</span></p>
+                return <p className="text-[13px] leading-snug text-gray-500 font-medium">New activity from <span className="font-bold text-gray-900">{actorName}</span></p>
         }
     }
 
@@ -69,8 +77,8 @@ export function NotificationItem({ notification }: NotificationItemProps) {
             <div className="relative shrink-0">
                 <Avatar className="h-10 w-10 border border-gray-100 shadow-sm">
                     <AvatarImage src={notification.actor.avatar_url} />
-                    <AvatarFallback className="bg-gray-50 font-bold text-gray-400 text-xs text-center flex items-center justify-center">
-                        {notification.actor.full_name[0]}
+                        <AvatarFallback className="bg-gray-50 font-bold text-gray-400 text-xs text-center flex items-center justify-center">
+                        {actorName[0]}
                     </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-1 shadow-sm border border-gray-100 flex items-center justify-center">

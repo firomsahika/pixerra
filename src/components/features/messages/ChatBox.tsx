@@ -21,6 +21,11 @@ export function ChatBox({ currentUser, otherUser, initialMessages }: ChatBoxProp
 
     const targetUser = Array.isArray(otherUser) ? otherUser[0] : otherUser
 
+    const targetUserName = (() => {
+        const name = `${targetUser?.first_name || ''}${targetUser?.last_name ? ' ' + targetUser.last_name : ''}`.trim()
+        return name || targetUser?.username || 'User'
+    })()
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight
@@ -62,15 +67,15 @@ export function ChatBox({ currentUser, otherUser, initialMessages }: ChatBoxProp
                     <div className="relative">
                         <Avatar className="h-10 w-10 border border-gray-50 shadow-sm">
                             <AvatarImage src={targetUser.avatar_url} />
-                            <AvatarFallback className="bg-gray-100 font-bold text-gray-500 text-sm">
-                                {targetUser.full_name?.[0] || <User className="w-4 h-4" />}
+                                <AvatarFallback className="bg-gray-100 font-bold text-gray-500 text-sm">
+                                {targetUser?.first_name?.[0] || <User className="w-4 h-4" />}
                             </AvatarFallback>
                         </Avatar>
                         <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-green-500 border-2 border-white rounded-full" />
                     </div>
                     <div>
                         <h2 className="text-sm font-bold text-gray-900 leading-tight">
-                            {targetUser.full_name}
+                            {targetUserName}
                         </h2>
                         <span className="text-[11px] text-gray-400 font-medium">Active now</span>
                     </div>
@@ -99,7 +104,7 @@ export function ChatBox({ currentUser, otherUser, initialMessages }: ChatBoxProp
                                         {showAvatar && (
                                             <Avatar className="h-8 w-8 border border-gray-50 shadow-sm">
                                                 <AvatarImage src={targetUser.avatar_url} />
-                                                <AvatarFallback className="text-[10px]">{targetUser.full_name?.[0]}</AvatarFallback>
+                                                <AvatarFallback className="text-[10px]">{targetUser.first_name?.[0] || targetUser.username?.[0]}</AvatarFallback>
                                             </Avatar>
                                         )}
                                     </div>
@@ -144,7 +149,7 @@ export function ChatBox({ currentUser, otherUser, initialMessages }: ChatBoxProp
                                     handleSend();
                                 }
                             }}
-                            placeholder={`Reply to ${targetUser.full_name.split(' ')[0]}...`}
+                            placeholder={`Reply to ${targetUser.first_name || targetUser.username || 'User'}...`}
                             rows={2}
                             className="w-full p-4 pr-12 text-[13px] text-gray-800 bg-white border border-gray-200 rounded-xl focus:border-red-500 focus:ring-1 focus:ring-red-100 outline-none transition-all resize-none shadow-sm placeholder:text-gray-400"
                         />

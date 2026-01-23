@@ -53,9 +53,9 @@ export default async function MessagesPage() {
                             >
                                 <div className="relative shrink-0">
                                     <Avatar className="h-10 w-10 border border-white shadow-sm">
-                                        <AvatarImage src={chat.profile.avatar_url} />
-                                        <AvatarFallback className="bg-gray-100 text-gray-400 font-bold text-xs">{chat.profile.full_name[0]}</AvatarFallback>
-                                    </Avatar>
+                                            <AvatarImage src={chat.profile.avatar_url} />
+                                            <AvatarFallback className="bg-gray-100 text-gray-400 font-bold text-xs">{(chat.profile.first_name || chat.profile.username)[0]}</AvatarFallback>
+                                        </Avatar>
                                     {chat.isUnread && (
                                         <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-600 rounded-full border-2 border-white" />
                                     )}
@@ -63,7 +63,7 @@ export default async function MessagesPage() {
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-0.5">
-                                        <h3 className="text-[13px] font-bold text-gray-900 truncate">{chat.profile.full_name}</h3>
+                                        <h3 className="text-[13px] font-bold text-gray-900 truncate">{`${chat.profile.first_name || ''} ${chat.profile.last_name || ''}`.trim() || chat.profile.username}</h3>
                                         <span suppressHydrationWarning className="text-[10px] text-gray-400 font-semibold whitespace-nowrap">
                                             {formatDistanceToNow(new Date(chat.createdAt), { addSuffix: false })}
                                         </span>

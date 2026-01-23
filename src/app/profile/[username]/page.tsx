@@ -37,8 +37,16 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                         </AvatarFallback>
                     </Avatar>
                     <div>
-                        <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-2">{profile.full_name || profile.username}</h1>
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-2">{`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username}</h1>
+                            <p className="text-sm text-gray-500">@{profile.username}</p>
+                        </div>
                         <p className="text-gray-500 font-medium">{profile.bio || "Digital Designer & Creator"}</p>
+                        <div className="mt-3 flex items-center gap-3">
+                            {(profile.skills || []).map((s: string) => (
+                                <span key={s} className="px-3 py-1 rounded-full bg-gray-100 text-sm font-bold text-gray-600">{s}</span>
+                            ))}
+                        </div>
                         <div className="flex items-center gap-4 mt-4">
                             <div className="text-sm">
                                 <span className="font-bold text-gray-900">{designs.length}</span> <span className="text-gray-500">Designs</span>

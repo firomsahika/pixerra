@@ -1,7 +1,8 @@
 export interface MockCreator {
     id: string
     username: string
-    full_name: string
+    first_name?: string
+    last_name?: string
     avatar_url: string
     bio: string
     skills: string[]
@@ -14,7 +15,8 @@ export const MOCK_CREATORS: MockCreator[] = [
     {
         id: "c1",
         username: "arivera_design",
-        full_name: "Alex Rivera",
+        first_name: "Alex",
+        last_name: "Rivera",
         avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop",
         bio: "Senior Brand Designer specializing in minimalist visual identities and typography-led design systems.",
         skills: ["Brand Identity", "Typography", "Art Direction"],
@@ -29,7 +31,8 @@ export const MOCK_CREATORS: MockCreator[] = [
     {
         id: "c2",
         username: "schen_ux",
-        full_name: "Sarah Chen",
+        first_name: "Sarah",
+        last_name: "Chen",
         avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
         bio: "UI/UX Architect focus on building scalable design systems and intuitive user journeys for fintech platforms.",
         skills: ["Product Design", "UX Strategy", "Figma"],
@@ -44,7 +47,8 @@ export const MOCK_CREATORS: MockCreator[] = [
     {
         id: "c3",
         username: "mthorne_3d",
-        full_name: "Marcus Thorne",
+        first_name: "Marcus",
+        last_name: "Thorne",
         avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
         bio: "Motion Designer and 3D Artist. Creating immersive spatial experiences through Blender and After Effects.",
         skills: ["Blender", "3D Animation", "Motion Graphics"],
@@ -59,7 +63,8 @@ export const MOCK_CREATORS: MockCreator[] = [
     {
         id: "c4",
         username: "elena_v",
-        full_name: "Elena Vance",
+        first_name: "Elena",
+        last_name: "Vance",
         avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop",
         bio: "Architectural Photographer and Minimalist Enthusiast. Finding rhythm in structure and shadows.",
         skills: ["Photography", "Composition", "Retouching"],

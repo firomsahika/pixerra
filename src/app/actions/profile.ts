@@ -29,20 +29,28 @@ export async function updateProfile(formData: FormData) {
         throw new Error("Unauthorized")
     }
 
-    const full_name = formData.get("full_name") as string
-    const username = formData.get("username") as string
-    const bio = formData.get("bio") as string
-    const website = formData.get("website") as string
-    const avatar_url = formData.get("avatar_url") as string
+    const first_name = (formData.get("first_name") as string) || ""
+    const last_name = (formData.get("last_name") as string) || ""
+    const username = (formData.get("username") as string) || ""
+    const bio = (formData.get("bio") as string) || ""
+    const website = (formData.get("website") as string) || ""
+    const avatar_url = (formData.get("avatar_url") as string) || ""
+    const skillsString = (formData.get("skills") as string) || ""
+    const skills = skillsString
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
 
     const { error } = await supabase
         .from('profiles')
         .update({
-            full_name,
+            first_name,
+            last_name,
             username,
             bio,
             website,
             avatar_url,
+            skills,
             updated_at: new Date().toISOString()
         })
         .eq('id', user.id)

@@ -2,7 +2,8 @@ export const MOCK_CONVERSATIONS = [
     {
         userId: "c1",
         profile: {
-            full_name: "Alex Rivera",
+            first_name: "Alex",
+            last_name: "Rivera",
             avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop",
             username: "arivera_design"
         },
@@ -13,7 +14,8 @@ export const MOCK_CONVERSATIONS = [
     {
         userId: "c2",
         profile: {
-            full_name: "Sarah Chen",
+            first_name: "Sarah",
+            last_name: "Chen",
             avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop",
             username: "schen_ux"
         },
@@ -24,7 +26,8 @@ export const MOCK_CONVERSATIONS = [
     {
         userId: "c3",
         profile: {
-            full_name: "Marcus Thorne",
+            first_name: "Marcus",
+            last_name: "Thorne",
             avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
             username: "mthorne_3d"
         },

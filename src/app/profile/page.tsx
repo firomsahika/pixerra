@@ -21,6 +21,8 @@ export default async function ProfilePage() {
     const profile = await getProfile(user.id)
     const designs = await getUserDesigns(user.id)
 
+    const totalLikes = designs.reduce((acc, d: any) => acc + (d.likes_count || 0), 0)
+
     return (
         <div className="min-h-screen bg-white py-12 px-4">
             <div className="max-w-[2000px] mx-auto">
@@ -32,13 +34,25 @@ export default async function ProfilePage() {
                         </AvatarFallback>
                     </Avatar>
                     <div>
-                        <h1 className="text-4xl font-black tracking-tight text-gray-900 mb-2">
-                            {profile?.full_name || user.user_metadata.full_name || "Creative Pro"}
-                        </h1>
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-3xl font-black tracking-tight text-gray-900 mb-0">
+                                {`${profile?.first_name || user.user_metadata.first_name || ''} ${profile?.last_name || user.user_metadata.last_name || ''}`.trim() || user.user_metadata.full_name || "Creative Pro"}
+                            </h1>
+                            <p className="text-sm text-gray-500">@{profile?.username || user.user_metadata.username}</p>
+                        </div>
+
                         <p className="text-gray-500 font-medium">{profile?.bio || "Digital Designer & Creator"}</p>
+                        <div className="mt-3 flex items-center gap-3">
+                            {(profile?.skills || []).map((s: string) => (
+                                <span key={s} className="px-3 py-1 rounded-full bg-gray-100 text-sm font-bold text-gray-600">{s}</span>
+                            ))}
+                        </div>
                         <div className="flex items-center gap-4 mt-4">
                             <div className="text-sm">
                                 <span className="font-bold text-gray-900">{designs.length}</span> <span className="text-gray-500">Designs</span>
+                            </div>
+                            <div className="text-sm">
+                                <span className="font-bold text-gray-900">{totalLikes}</span> <span className="text-gray-500">Total Likes</span>
                             </div>
                             <div className="text-sm">
                                 <span className="font-bold text-gray-900">0</span> <span className="text-gray-500">Following</span>

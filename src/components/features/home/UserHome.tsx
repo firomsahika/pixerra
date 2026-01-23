@@ -52,7 +52,7 @@ export function UserHome({ user, initialDesigns }: UserHomeProps) {
         fetchFilteredDesigns()
     }, [selectedCategory])
 
-    const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'Creative'
+    const firstName = user?.user_metadata?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || 'Creative'
 
     return (
         <div className="flex flex-col min-h-screen bg-white">

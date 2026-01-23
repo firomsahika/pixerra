@@ -7,7 +7,8 @@ interface CreatorCardProps {
     creator: {
         id: string
         username: string
-        full_name: string
+        first_name?: string
+        last_name?: string
         avatar_url: string
         bio: string
         skills?: string[]
@@ -18,6 +19,11 @@ interface CreatorCardProps {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
+    const fullName = (() => {
+        const name = `${creator.first_name || ''}${creator.last_name ? ' ' + creator.last_name : ''}`.trim()
+        return name || creator.username
+    })()
+
     return (
         <div className="group relative bg-white/40 backdrop-blur-xl rounded-[40px] border border-white shadow-2xl shadow-gray-100/30 p-8 transition-all hover:shadow-red-100/30 hover:-translate-y-1 overflow-hidden">
             {/* Background Decor */}
@@ -28,7 +34,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                     <Avatar className="h-24 w-24 border-4 border-white shadow-xl transition-transform group-hover/avatar:scale-105">
                         <AvatarImage src={creator.avatar_url} />
                         <AvatarFallback className="text-2xl font-black bg-gradient-to-br from-gray-100 to-gray-200">
-                            {creator.full_name?.[0] || creator.username?.[0]}
+                            { (creator.first_name?.[0] || creator.username?.[0]) }
                         </AvatarFallback>
                     </Avatar>
                     <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-red-600 rounded-full border-2 border-white flex items-center justify-center">
@@ -38,7 +44,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
                 <div className="mt-6 space-y-2">
                     <h3 className="text-xl font-black text-gray-900 tracking-tight leading-tight group-hover:text-red-600 transition-colors">
-                        {creator.full_name || creator.username}
+                        {fullName}
                     </h3>
                     <p className="text-xs font-black text-red-500 uppercase tracking-widest">@{creator.username}</p>
                 </div>

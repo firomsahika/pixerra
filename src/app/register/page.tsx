@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation"
 export default function RegisterPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
@@ -20,7 +22,7 @@ export default function RegisterPage() {
         setLoading(true)
         setError(null)
 
-        if (!email || !password) {
+        if (!email || !password || !firstName || !lastName) {
             setError("Please fill in all fields")
             setLoading(false)
             return
@@ -32,7 +34,7 @@ export default function RegisterPage() {
             return
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -44,6 +46,20 @@ export default function RegisterPage() {
             setError(error.message)
             setLoading(false)
         } else {
+            // Try to create a profile row (may fail if email confirmation required)
+            try {
+                const userId = data?.user?.id
+                if (userId) {
+                    await supabase.from('profiles').insert({
+                        id: userId,
+                        first_name: firstName,
+                        last_name: lastName,
+                    })
+                }
+            } catch (err) {
+                console.warn('Failed to create profile row on sign up', err)
+            }
+
             alert("Check your email for the confirmation link!")
             router.push("/login")
         }
@@ -86,6 +102,30 @@ export default function RegisterPage() {
                     </div>
 
                     <form onSubmit={handleRegister} className="space-y-4">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700 ml-1">First name</label>
+                                <Input
+                                    type="text"
+                                    placeholder="First name"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    required
+                                    className="h-12 rounded-xl"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-700 ml-1">Last name</label>
+                                <Input
+                                    type="text"
+                                    placeholder="Last name"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                    className="h-12 rounded-xl"
+                                />
+                            </div>
+                        </div>
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-gray-700 ml-1">Email</label>
                             <Input

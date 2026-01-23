@@ -36,6 +36,13 @@ export function Navbar({ user }: NavbarProps) {
     const isActive = (path: string) => pathname === path
     const { theme, toggleTheme } = useTheme()
 
+    const displayName = (() => {
+        const first = user?.user_metadata?.first_name || user?.user_metadata?.full_name?.split(' ')[0]
+        const last = user?.user_metadata?.last_name || user?.user_metadata?.full_name?.split(' ').slice(1).join(' ')
+        const name = `${first || ''}${last ? ' ' + last : ''}`.trim()
+        return name || 'User'
+    })()
+
     return (
         <nav className="fixed top-0 z-50 w-full bg-white backdrop-blur-lg border-b border-gray-100" suppressHydrationWarning>
             <div className="flex items-center justify-between h-20 px-4 md:px-8" suppressHydrationWarning>
@@ -119,7 +126,7 @@ export function Navbar({ user }: NavbarProps) {
                                     <DropdownMenuContent className="w-56 text-gray-600 " align="end" forceMount>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium leading-none">{user.user_metadata.full_name || "User"}</p>
+                                                <p className="text-sm font-medium leading-none">{displayName}</p>
                                                 <p className="text-xs leading-none text-slate-800">
                                                     {user.email}
                                                 </p>

@@ -54,18 +54,22 @@ export async function uploadDesign(formData: FormData) {
         .maybeSingle()
 
     if (!profile) {
+        const fullName = user.user_metadata?.full_name || ""
+        const firstName = user.user_metadata?.first_name || (fullName ? fullName.split(' ')[0] : user.email?.split('@')[0]) || "Creative"
+        const lastName = user.user_metadata?.last_name || (fullName ? fullName.split(' ').slice(1).join(' ') : "")
+
         const { error: profileError } = await supabase
             .from('profiles')
             .insert({
                 id: user.id,
-                full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || "Creative Pro",
+                first_name: firstName,
+                last_name: lastName,
                 avatar_url: user.user_metadata?.avatar_url,
                 username: user.user_metadata?.username || (user.email?.split('@')[0] || "user") + Math.floor(Math.random() * 1000)
             })
 
         if (profileError) {
             console.error("Error creating missing profile:", profileError)
-            // If it's a conflict (username), we might need to handle it, but let's stick to basics
         }
     }
 
@@ -221,22 +225,22 @@ export async function getDesignById(id: string) {
     }
 }
 
-export async function deleteDesign(designId: string) {      
-    const supabase =  await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+// export async function deleteDesign(designId: string) {      
+//     const supabase =  await createClient()
+//     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
-        throw new Error("Unauthorized")
-    }
+//     if (!user) {
+//         throw new Error("Unauthorized")
+//     }
 
-    // delete design
-    await supabase.from('designs').delete({
-        design_id: designId,
-        user_id: user.id
-    })
+//     // delete design
+//     await supabase.from('designs').delete({
+//         design_id: designId,
+//         user_id: user.id
+//     })
 
-    router.refresh()
-}
+//     router.refresh()
+// }
 export async function incrementViewCount(designId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

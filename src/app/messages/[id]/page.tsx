@@ -65,7 +65,7 @@ export default async function ConversationPage({ params }: { params: { id: strin
                                 <div className="relative shrink-0">
                                     <Avatar className="h-10 w-10 border border-white shadow-sm">
                                         <AvatarImage src={chat.profile.avatar_url} />
-                                        <AvatarFallback className="bg-gray-100 text-gray-400 font-bold text-xs">{chat.profile.full_name[0]}</AvatarFallback>
+                                        <AvatarFallback className="bg-gray-100 text-gray-400 font-bold text-xs">{(chat.profile.first_name || chat.profile.username)[0]}</AvatarFallback>
                                     </Avatar>
                                     {chat.isUnread && (
                                         <div className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-600 rounded-full border-2 border-white" />
@@ -75,7 +75,7 @@ export default async function ConversationPage({ params }: { params: { id: strin
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-0.5">
                                         <h3 className={cn("text-[13px] truncate", chat.userId === id ? "font-bold text-red-600" : "font-bold text-gray-900")}>
-                                            {chat.profile.full_name}
+                                            {`${chat.profile.first_name || ''} ${chat.profile.last_name || ''}`.trim() || chat.profile.username}
                                         </h3>
                                         <span suppressHydrationWarning className="text-[10px] text-gray-400 font-semibold whitespace-nowrap">
                                             {formatDistanceToNow(new Date(chat.createdAt), { addSuffix: false })}
@@ -107,14 +107,14 @@ export default async function ConversationPage({ params }: { params: { id: strin
                 <aside className="hidden xl:flex flex-col w-[300px] border-l border-gray-100 bg-[#f9f9f9]/30 overflow-y-auto">
                     <div className="p-8 space-y-8">
                         <div className="text-center space-y-4">
-                            <Avatar className="h-20 w-20 mx-auto border-4 border-white shadow-lg">
+                                <Avatar className="h-20 w-20 mx-auto border-4 border-white shadow-lg">
                                 <AvatarImage src={otherUser.avatar_url} />
                                 <AvatarFallback className="text-xl font-bold bg-gray-100 text-gray-400">
-                                    {otherUser.full_name[0]}
+                                    {(otherUser.first_name || otherUser.username)[0]}
                                 </AvatarFallback>
                             </Avatar>
-                            <div>
-                                <h3 className="text-md font-black text-gray-900 tracking-tight">{otherUser.full_name}</h3>
+                                <div>
+                                <h3 className="text-md font-black text-gray-900 tracking-tight">{`${otherUser.first_name || ''} ${otherUser.last_name || ''}`.trim() || otherUser.username}</h3>
                                 <p className="text-[10px] text-red-600 font-black uppercase tracking-widest mt-0.5">@{otherUser.username}</p>
                             </div>
                             <div className="flex justify-center gap-2">

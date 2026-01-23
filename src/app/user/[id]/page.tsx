@@ -20,7 +20,8 @@ export default async function UserProfilePage({ params }: { params: { id: string
         profile = {
             id: mockCreator.id,
             username: mockCreator.username,
-            full_name: mockCreator.full_name,
+            first_name: mockCreator.first_name,
+            last_name: mockCreator.last_name,
             avatar_url: mockCreator.avatar_url,
             bio: mockCreator.bio,
             website: "https://portfolio.design",
@@ -99,8 +100,8 @@ export default async function UserProfilePage({ params }: { params: { id: string
                             <div className="absolute -inset-6 bg-gradient-to-tr from-blue-100/50 to-red-100/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             <Avatar className="h-44 w-44 md:h-60 md:w-60 border-[12px] border-white shadow-2xl relative transition-all duration-700 group-hover:scale-[1.02] group-hover:-rotate-2">
                                 <AvatarImage src={profile.avatar_url} />
-                                <AvatarFallback className="text-6xl font-black bg-white text-gray-200">
-                                    {(profile.full_name || profile.username || "?")[0].toUpperCase()}
+                                    <AvatarFallback className="text-6xl font-black bg-white text-gray-200">
+                                    {((profile.first_name || profile.username || "?")[0]).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="absolute -bottom-2 right-8 md:right-12 bg-white p-1.5 rounded-full shadow-xl">
@@ -123,7 +124,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
                                     </div>
                                 </div>
                                 <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-none">
-                                    {profile.full_name || profile.username}
+                                    {`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username}
                                 </h1>
                                 <div className="flex items-center justify-center md:justify-start gap-3">
                                     <p className="text-blue-600 font-black text-xl">@{profile.username}</p>
@@ -215,7 +216,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
                 <div className="relative z-10 space-y-10">
                     <h4 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
                         Like what you see? <br />
-                        <span className="text-gray-400">Work directly with {profile.full_name?.split(' ')[0] || profile.username}.</span>
+                        <span className="text-gray-400">Work directly with {profile.first_name || profile.username}.</span>
                     </h4>
                     <Button size="lg" className="rounded-full px-16 h-20 text-sm font-black uppercase tracking-widest bg-blue-600 hover:bg-white hover:text-gray-900 transition-all shadow-2xl shadow-blue-900/40">
                         Start a Project Today
